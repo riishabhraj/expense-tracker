@@ -14,7 +14,7 @@ const formatNumber = (number) => {
 };
 
 //Backend URL 
-const URL = "http://localhost:3000";
+const URL = "https://mern-expense-tracker-phl6.onrender.com";
 
 const App = () => {
   const [title, setTitle] = useState("");
