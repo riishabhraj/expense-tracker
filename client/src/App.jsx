@@ -13,6 +13,9 @@ const formatNumber = (number) => {
   });
 };
 
+//Backend URL 
+const URL = "http://localhost:3000";
+
 const App = () => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -24,7 +27,7 @@ const App = () => {
   useEffect(() => {
     const getTransactions = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/transactions");
+        const res = await fetch(`${URL}/api/transactions`);
         const data = await res.json();
         dispatch(setTransactions(data));
       } catch (error) {
@@ -38,7 +41,7 @@ const App = () => {
     e.preventDefault();
     const data = { title, amount: parseFloat(amount) };
     try {
-      const res = await fetch("http://localhost:3000/api/maketransaction", {
+      const res = await fetch(`${URL}/api/maketransaction`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +59,7 @@ const App = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/transactions/${id}`, {
+      const res = await fetch(`${URL}/api/transactions/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
