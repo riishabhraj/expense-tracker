@@ -13,9 +13,6 @@ const formatNumber = (number) => {
   });
 };
 
-//Backend URL 
-const URL = "https://mern-expense-tracker-phl6.onrender.com";
-
 const App = () => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -24,55 +21,31 @@ const App = () => {
   );
   const dispatch = useDispatch();
 
+  // Load transactions from local storage when the component mounts
   useEffect(() => {
-    const getTransactions = async () => {
-      try {
-        const res = await fetch(`${URL}/api/transactions`);
-        const data = await res.json();
-        dispatch(setTransactions(data));
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    getTransactions();
+    const storedTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    dispatch(setTransactions(storedTransactions));
   }, [dispatch]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const data = { title, amount: parseFloat(amount) };
-    try {
-      const res = await fetch(`${URL}/api/maketransaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const newTransaction = await res.json(); // Assuming the API returns the created transaction with _id
-      dispatch(addTransaction(data)); // Dispatching action with the returned transaction
-    } catch (error) {
-      console.log(error.message);
-    }
+    const data = { title, amount: parseFloat(amount), _id: Date.now() }; // Generate a unique ID
+    dispatch(addTransaction(data));
+
+    // Update local storage
+    const updatedTransactions = [...transactions, data];
+    localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
+
     setTitle("");
     setAmount("");
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const res = await fetch(`${URL}/api/transactions/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        dispatch(removeTransaction(id));
-      } else {
-        throw new Error("Failed to delete transaction");
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+  const handleDelete = (id) => {
+    dispatch(removeTransaction(id));
+
+    // Update local storage
+    const updatedTransactions = transactions.filter(transaction => transaction._id !== id);
+    localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
   };
 
   return (
@@ -112,9 +85,9 @@ const App = () => {
           <h1 className="font-semibold text-xl">No Transactions</h1>
         )}
         <div className="flex flex-col gap-2 mt-2">
-          {transactions.map((transaction, index) => (
+          {transactions.map((transaction) => (
             <div
-              key={transaction._id || index}
+              key={transaction._id}
               className={`shadow-md border-2 ${
                 transaction.amount > 0 ? "shadow-green-500" : "shadow-red-500"
               } flex justify-between font-semibold sm:text-lg`}
@@ -126,7 +99,7 @@ const App = () => {
                 </p>
                 <button
                   onClick={() => handleDelete(transaction._id)}
-                  className="transition ease-in-out bg-red-500 duration-300 border-l px-2 sm:px-3 hover:bg-red-300 transition-colors-2s font-bold"
+                  className="transition ease-in-out bg-red-500 duration-300 border-l px-2 sm:px-3 hover:bg-red-300 transition-colors duration-200 font-bold"
                 >
                   <RxCross2 />
                 </button>
@@ -152,6 +125,7 @@ const App = () => {
             type="text"
             id="title"
             placeholder="Enter the title here..."
+            required
           />
           <div>
             <label htmlFor="amount">Amount</label>
@@ -164,6 +138,7 @@ const App = () => {
             type="number"
             id="amount"
             placeholder="Enter the amount here..."
+            required
           />
         </div>
         <button
