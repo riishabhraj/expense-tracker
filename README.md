@@ -1,5 +1,7 @@
 # Expense Tracker
 
+![expense-tracker-image](https://github.com/user-attachments/assets/df2cacd5-d09b-40f7-b9be-e3f011355a2c)
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
