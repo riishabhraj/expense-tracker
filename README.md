@@ -8,8 +8,8 @@ environment running:
 Clone the git repository
 
 ```bash
-git clone https://github.com/riishabhraj/destroyer2.git
-cd destroyer2
+git clone https://github.com/riishabhraj/expense-tracker.git
+cd expense-tracker
 ```
 
 And install npm dependencies
